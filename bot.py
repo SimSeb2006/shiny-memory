@@ -8,6 +8,8 @@ TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN")
 CHAT_ID        = os.environ.get("CHAT_ID")
 AV_API_KEY     = os.environ.get("AV_API_KEY")
 INTERVALO_MIN  = 15  # minutos entre verificações
+PIPS_SL = 15         # Stop Loss (Quantos pips aceitas perder)
+PIPS_TP = 30         # Take Profit (Quantos pips queres ganhar)
 
 ultimo_sinal = None  # guarda o último sinal para não repetir
 
@@ -119,15 +121,33 @@ def verificar_e_enviar():
 
         # Só envia se for COMPRAR ou VENDER (e diferente do último sinal)
         if sinal in ("COMPRAR", "VENDER") and sinal != ultimo_sinal:
+            
+            # 1. Descobrir o preço exato de agora
+            preco_atual = precos[-1] 
+            
+            # 2. Calcular o Stop Loss e Take Profit (1 pip = 0.0001)
+            if sinal == "COMPRAR":
+                stop_loss = preco_atual - (PIPS_SL * 0.0001)
+                take_profit = preco_atual + (PIPS_TP * 0.0001)
+            elif sinal == "VENDER":
+                stop_loss = preco_atual + (PIPS_SL * 0.0001)
+                take_profit = preco_atual - (PIPS_TP * 0.0001)
+
+            # 3. Montar a nova mensagem para o Telegram
             emoji = "🟢" if sinal == "COMPRAR" else "🔴"
             msg = (
                 f"{emoji} <b>EUR/USD — {sinal}</b>\n\n"
+                f"💰 <b>Preço de Entrada:</b> {preco_atual:.5f}\n"
+                f"🛑 <b>Stop Loss:</b> {stop_loss:.5f} ({PIPS_SL} pips)\n"
+                f"🎯 <b>Take Profit:</b> {take_profit:.5f} ({PIPS_TP} pips)\n\n"
+                f"📊 <b>Indicadores:</b>\n"
                 + "\n".join(detalhes)
-                + f"\n\nTimeframe: 5m"
+                + f"\n\n⏱ Timeframe: 5m"
             )
+            
             enviar_mensagem(msg)
             ultimo_sinal = sinal
-            print(f"Sinal enviado: {sinal}")
+            print(f"Sinal enviado: {sinal} a {preco_atual}")
         else:
             print(f"Sinal atual: {sinal} — sem alteração, não enviado")
 
