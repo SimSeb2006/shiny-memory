@@ -13,31 +13,25 @@ ultimo_sinal = None  # guarda o último sinal para não repetir
 
 # ── Funções de indicadores ─────────────────────────────────────
 
+import yfinance as yf
+
 def obter_precos():
-    # TESTE: Vamos ver se a chave está a ser lida do Railway
-    if not AV_API_KEY:
-        print("ERRO CRÍTICO: A variável AV_API_KEY está vazia no Railway!")
+    try:
+        # Vai buscar os dados do par EURUSD=X (5 minutos, últimos 5 dias)
+        ticker = yf.Ticker("EURUSD=X")
+        df = ticker.history(period="5d", interval="5m")
+        
+        if df.empty:
+            print("Yahoo Finance não devolveu dados.")
+            return []
+            
+        # Pega nos últimos 30 preços de fecho
+        precos = df['Close'].tail(30).tolist()
+        print(f"Sucesso Yahoo! Recebi {len(precos)} preços.")
+        return precos
+    except Exception as e:
+        print(f"Erro no Yahoo Finance: {e}")
         return []
-
-    url = (
-        f"https://www.alphavantage.co/query"
-        f"?function=FX_INTRADAY&from_symbol=EUR&to_symbol=USD"
-        f"&interval=5min&outputsize=compact&apikey={AV_API_KEY}"
-    )
-    
-    r = requests.get(url, timeout=10)
-    data = r.json()
-
-    # ISTO VAI MOSTRAR O ERRO REAL NOS LOGS:
-    print(f"RESPOSTA DA API: {data}") 
-
-    series = data.get("Time Series FX (5min)", {})
-    if not series:
-        return []
-
-    precos = [float(v["4. close"]) for v in list(series.values())]
-    print(f"Sucesso! Recebi {len(precos)} preços.")
-    return list(reversed(precos))
 def calcular_ema(precos, periodo):
     k = 2 / (periodo + 1)
     ema = precos[0]
