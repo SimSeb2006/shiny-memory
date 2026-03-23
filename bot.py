@@ -7,7 +7,7 @@ import requests
 TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN")
 CHAT_ID        = os.environ.get("CHAT_ID")
 AV_API_KEY     = os.environ.get("AV_API_KEY")
-INTERVALO_MIN  = 15  # minutos entre verificações
+INTERVALO_MIN  = 5  # minutos entre verificações
 PIPS_SL = 15         # Stop Loss (Quantos pips aceitas perder)
 PIPS_TP = 30         # Take Profit (Quantos pips queres ganhar)
 
