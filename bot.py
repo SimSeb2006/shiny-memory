@@ -102,7 +102,6 @@ def verificar_e_enviar():
         precos = obter_precos()
         if len(precos) < 27:
             print("Dados insuficientes")
-            bot.send_message(CHAT_ID, "O bot está a tentar analisar, mas ainda não tem dados.")
             return
 
         rsi_val = calcular_rsi(precos)
