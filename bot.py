@@ -13,7 +13,7 @@ ultimo_sinal = None  # guarda o último sinal para não repetir
 
 # ── Funções de indicadores ─────────────────────────────────────
 
-def def obter_precos():
+def obter_precos():
     url = (
         f"https://www.alphavantage.co/query"
         f"?function=FX_INTRADAY&from_symbol=EUR&to_symbol=USD"
