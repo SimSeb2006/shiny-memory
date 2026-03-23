@@ -128,6 +128,7 @@ def verificar_e_enviar():
         print(f"Erro: {e}")
 
 print("Bot iniciado. A verificar sinais...")
+enviar_mensagem("🚀 O bot foi ligado no Railway e está a monitorizar o EUR/USD!")
 while True:
     verificar_e_enviar()
     time.sleep(INTERVALO_MIN * 60)
