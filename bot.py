@@ -1,4 +1,4 @@
-```python
+
 import os
 import time
 import requests
@@ -131,6 +131,4 @@ print("Bot iniciado. A verificar sinais...")
 while True:
     verificar_e_enviar()
     time.sleep(INTERVALO_MIN * 60)
-```
 
----
