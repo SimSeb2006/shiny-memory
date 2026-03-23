@@ -14,36 +14,30 @@ ultimo_sinal = None  # guarda o último sinal para não repetir
 # ── Funções de indicadores ─────────────────────────────────────
 
 def obter_precos():
+    # TESTE: Vamos ver se a chave está a ser lida do Railway
+    if not AV_API_KEY:
+        print("ERRO CRÍTICO: A variável AV_API_KEY está vazia no Railway!")
+        return []
+
     url = (
         f"https://www.alphavantage.co/query"
         f"?function=FX_INTRADAY&from_symbol=EUR&to_symbol=USD"
         f"&interval=5min&outputsize=compact&apikey={AV_API_KEY}"
     )
+    
     r = requests.get(url, timeout=10)
     data = r.json()
 
-    # Log para ver o que a API diz (ajuda muito a debugar no Railway)
-    if "Error Message" in data:
-        print(f"Erro na API: {data['Error Message']}")
-        return []
-    if "Note" in data:
-        print("Aviso: Limite de chamadas da Alpha Vantage atingido!")
-        return []
+    # ISTO VAI MOSTRAR O ERRO REAL NOS LOGS:
+    print(f"RESPOSTA DA API: {data}") 
 
     series = data.get("Time Series FX (5min)", {})
-    
     if not series:
-        print("A API não devolveu dados (pode ser fim de semana ou mercado fechado).")
         return []
 
-    # Vamos buscar as velas e converter para float
     precos = [float(v["4. close"]) for v in list(series.values())]
-    
-    # Se houver dados, ele traz os 100 últimos. Vamos garantir que temos os 27.
-    print(f"Velas recebidas: {len(precos)}")
-    
-    return list(reversed(precos)) # Do mais antigo para o mais recente
-
+    print(f"Sucesso! Recebi {len(precos)} preços.")
+    return list(reversed(precos))
 def calcular_ema(precos, periodo):
     k = 2 / (periodo + 1)
     ema = precos[0]
